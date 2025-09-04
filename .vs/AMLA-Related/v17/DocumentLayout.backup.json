@@ -1,0 +1,44 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\konofies\\source\\repos\\AMLA-Related\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\konofies\\source\\repos\\AMLA-Related\\MULTI_BENE.sql||{B5A506EB-11BE-4782-9A18-21265C2CA0B4}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MULTI_BENE.sql||{B5A506EB-11BE-4782-9A18-21265C2CA0B4}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{ed7d6f85-175b-4b57-9887-71fe8b865fc8}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MULTI_BENE.sql - SSCLSERVICE1.master (sa (59))",
+              "DocumentMoniker": "C:\\Users\\konofies\\source\\repos\\AMLA-Related\\MULTI_BENE.sql",
+              "RelativeDocumentMoniker": "MULTI_BENE.sql",
+              "ToolTip": "C:\\Users\\konofies\\source\\repos\\AMLA-Related\\MULTI_BENE.sql - SSCLSERVICE1.master (sa (59))",
+              "RelativeToolTip": "MULTI_BENE.sql - SSCLSERVICE1.master (sa (59))",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-09-03T06:09:46.338Z",
+              "EditorCaption": " - SSCLSERVICE1.master (sa (59))"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
