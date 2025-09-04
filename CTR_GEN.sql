@@ -41,7 +41,7 @@ BEGIN
     Declare @EXPORTED [varchar](1);
     Declare @DETAILINDICATOR [varchar](1);
     Declare @TXNDATE [datetime];
-    Declare @TXN_DATE_IDX [datetime]; -- Added by viShnu.K for # on 03Aug2K18
+    Declare @TXN_DATE_IDX [date]; -- Added by viShnu.K for # on 03Aug2K18 -- Modify by REMAGSINO
     Declare @TXNTYPE [varchar](6);
     Declare @TXNREFNO [varchar](50);
     Declare @INDIVIDUAL_CORPORATE [varchar](1);
