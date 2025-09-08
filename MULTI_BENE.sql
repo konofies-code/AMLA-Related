@@ -165,19 +165,8 @@ BEGIN
             select distinct TRANSACTION_TYPE 
             from AML_CTR_TRANTYPE
         )
-
-        AND TXNREFNO NOT IN
-        (
-            SELECT TXNREFNO FROM aml_transaction a
-            left join aml_account b on a.accountnumber = b.ACCOUNTNUMBER
-            where PRODUCTTYPE = 'FTRQ' AND TXNMODE = 'DR'
-            AND B.ACCOUNTTYPE NOT IN ('901','902','903','904','906','907','908','909','911','912','913','914')
-            AND convert(date,A.IMPORTED_DATE) = CONVERT(DATE,GETDATE())
-        )
         and (BENEFICIARYNAME1 is not null or BENEFICIARYNAME3 is not null or BENEFICIARY_ACCOUNTNO is not null)
         AND CONVERT(DATE,IMPORTED_DATE) = CONVERT(DATE,GETDATE())  AND SOURCE = 'CASA'
-
-
 END
 
 
