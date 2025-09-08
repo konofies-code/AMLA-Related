@@ -1,4 +1,4 @@
-USE [Base60_PROD2]
+USE [PSBDB]
 GO
 /****** Object:  StoredProcedure [dbo].[ETL_TRANSACTION_INS]    Script Date: 9/3/2025 1:48:06 PM ******/
 SET ANSI_NULLS ON
@@ -20,45 +20,37 @@ GO
 ALTER PROCEDURE [dbo].[ETL_TRANSACTION_INS]
 AS BEGIN
 
+DROP TABLE IF EXISTS AML_TEMP_TRANS
 
-INSERT INTO AML_TRANSACTION (TXNID, TXNDATE, TXNREFNO, TXNTYPE, TXNSUBTYPE, TXNMODE, TXNAMOUNT, INOUT, BRANCHCODE, CURRENCY, EXCHANGERATE,REMARKS,
-		PURPOSE, CPNAME1, IMPORTED_DATE, CPNAME2, CPNAME3, CPADDRESS1, CPADDRESS2, CPADDRESS3, CORRESPONDENTBANK, CORRESBANKCOUNTRYCODE,
-		CORRESBANKADDRESS1, CORRESBANKADDRESS2, CORRESBANKADDRESS3, PRODUCTTYPE, INCEPTIONDATE, MATUITYDATE, TXNNATURE, FUNDSSOURCE, FXAMOUNT,
-		SOURCE, INPUTDATE, DEBIT_CREDIT, BENEFICIARYNAME1, BENEFICIARYNAME2, BENEFICIARYNAME3, BENEFICIARY_ACCOUNTNO, BENEFICIARY_NAME_FLAG, 
-		BENEFICIARYADDRESS1, BENEFICIARYADDRESS2, BENEFICIARYADDRESS3, ACCOUNTID, OPACCOUNTNO, SRCTXNTYPE, SRC_TXN_REFNO, cpaccountno, AccountNumber,
-		STOCKREFNO, NOOFSHARES, NETASSETVALUE, REGION, TXN_DATE_TIME, RUNID, RUNDATE)
-
-
-
-select 
-(SELECT max(txnid) from AML_TRANSACTION) + ROW_NUMBER() OVER (ORDER BY A.TXNREFNO) AS TXNID,
-CASE WHEN a.SOURCE = 'REM-DEPO' THEN a.TXNDATE ELSE TXN_DATE_TIME END as TXNDATE, a.txnrefno, TXNTYPE, TXNSUBTYPE, TXNMODE, TXNAMOUNT, INOUT, BRANCHCODE, CURRENCY, EXCHANGERATE,REMARKS,
-		PURPOSE, CPNAME1, IMPORTED_DATE, CPNAME2, CPNAME3, CPADDRESS1, CPADDRESS2, CPADDRESS3, CORRESPONDENTBANK, CORRESBANKCOUNTRYCODE,
-		CORRESBANKADDRESS1, CORRESBANKADDRESS2, CORRESBANKADDRESS3, PRODUCTTYPE, INCEPTIONDATE, MATUITYDATE, TXNNATURE, FUNDSSOURCE, FXAMOUNT,
-		A.SOURCE, INPUTDATE, DEBIT_CREDIT, BENEFICIARYNAME1, BENEFICIARYNAME2, BENEFICIARYNAME3, BENEFICIARY_ACCOUNTNO, BENEFICIARY_NAME_FLAG, 
-		BENEFICIARYADDRESS1, BENEFICIARYADDRESS2, BENEFICIARYADDRESS3, b.accountid,OPACCOUNTNO, SRCTXNTYPE, SRC_TXN_REFNO, cpaccountno, A.AccountNumber,
-			STOCKREFNO, NOOFSHARES, NETASSETVALUE, REGION, convert(date, TXN_DATE_TIME ) txn_date_time, RUNID, RUNDATE
-from (
+SELECT  
+	 [TXNDATE]      ,[TXNREFNO]      ,'' AS TXNTYPE      ,[TXNSUBTYPE]      ,[TXNMODE]      ,[TXNAMOUNT]      ,[INOUT]      ,a.[BRANCHCODE]      ,a.[CURRENCY]      ,[EXCHANGERATE]      ,[PURPOSE]      ,[CPNAME1]      ,a.[IMPORTED_DATE]      ,[CPNAME2]      ,[CPNAME3]      ,[CPINSTITUTION]      ,[CPINSTITUTIONCOUNTRY]      ,[CPADDRESS1]      ,[CPADDRESS2]      ,[CPADDRESS3]      ,[CORRESPONDENTBANK]      ,[CORRESBANKCOUNTRYCODE]      ,[CORRESBANKADDRESS1]      ,[CORRESBANKADDRESS2]      ,[CORRESBANKADDRESS3]      ,[INTERMEDIATORYINST]      ,[INTERMEDIATORYINSTCOUNTRY]      ,[INTERMEDIATORYINSTADDRESS1]      ,[INTERMEDIATORYINSTADDRESS2]      ,[INTERMEDIATORYINSTADDRESS3]      ,[PRODUCTTYPE]      ,[PRODUCTOWNERNAME1]      ,[PRODUCTOWNERNAME2]      ,[PRODUCTOWNERNAME3]      ,[PRODUCTOWNERADDRESS1]      ,[PRODUCTOWNERADDRESS2]      ,[PRODUCTOWNERADDRESS3]      ,[INCEPTIONDATE]      ,[MATUITYDATE]      ,[NARRATION]      ,[TXNNATURE]      ,[FUNDSSOURCE]      ,[FXAMOUNT]      ,[POSTINGGROUPID]      ,[POSTINGSEQNO]      ,a.[SOURCE]      ,[INPUTDATE]      ,[CERTIFIEDDOCUMENTS]      ,[REGULARDOCUMENTS]      ,[TXNFORBRANCH]      ,[BSRCODE]      ,[DEBIT_CREDIT]      ,[BENEFICIARYNAME1]      ,[BENEFICIARYNAME2]      ,[BENEFICIARYNAME3]      ,[BENEFICIARYADDRESS1]      ,[BENEFICIARYADDRESS2]      ,[BENEFICIARYADDRESS3]      ,a.[ACCOUNTID]      ,[REMARKS]      ,[OPBRANCHNAME]      ,[OPACCOUNTNO]      ,[DEALNO]      ,[SRCTXNTYPE]      ,[OTHERACCOUNT]      ,[BENEFICIARY_TINNO]      ,[BENEFICIARYCOUNTRY]      ,[REASONCODE]      ,a.[FIRST_IMPORTED_DATE]      ,[SRC_TXN_REFNO]      ,[cpaccountno]      ,a.[EXPORTED_DATE]      ,a.[ETL_FLAG]      ,[pop_benificiaryaddress]      ,[pop_benificiaryBOD]      ,[OTHERACCOUNTNO]      ,[SBCRefNoDetail]      ,[OTHERACCOUNTBRANCH]      ,[pop_benificiary]      ,[SBCREFNO]      ,[PO_GROUPID]      ,[SRC_TXNTYPE]      ,[customerno]      ,[CardNumber]      ,a.[AccountNumber]      ,[STOCKREFNO]      ,[AMOUNTOFCLAIM]      ,[NOOFSHARES]      ,[NETASSETVALUE]      ,[BENEFICIARY_CUSTOMERREFNO]      ,[BENEFICIARY_ACCOUNTNO]      ,[BENEFICIARY_DATEOFBIRTH]      ,[BENEFICIARY_PLACEOFBIRTH]      ,[BENEFICIARY_IDType]      ,[BENEFICIARY_IDNo]      ,[BENEFICIARY_TelNo]     ,[BENEFICIARY_NatureofBusiness]      ,[SUSPICION_CUSTOMERREFNO]      ,[SUSPICION_NAME1]      ,[SUSPICION_NAME2]      ,[SUSPICION_NAME3]      ,[SUSPICION_ADDRESS1]      ,[SUSPICION_ADDRESS2]      ,[SUSPICION_ADDRESS3]      ,[SUSPICION_ACCOUNTNO]      ,[SUSPICION_DATEOFBIRTH]      ,[SUSPICION_PLACEOFBIRTH]      ,[SUSPICION_NATIONALITY]      ,[SUSPICION_IDType]      ,[SUSPICION_IDNo]     ,[SUSPICION_TelNo]      ,[SUSPICION_NatureofBusiness]      ,[TRANSACTOR_CUSTOMERREFNO]      ,[TRANSACTOR_NAME1]      ,[TRANSACTOR_NAME2]      ,[TRANSACTOR_NAME3]      ,[TRANSACTOR_ADDRESS1]      ,[TRANSACTOR_ADDRESS2]      ,[TRANSACTOR_ADDRESS3]      ,[TRANSACTOR_ACCOUNTNO]      ,[CPCUSTOMERREFNO]      ,[OP_CUSTOMERREFNO]      ,[OP_NAME1]      ,[OP_NAME2]      ,[OP_NAME3]      ,[OP_ADDRESS1]      ,[OP_ADDRESS2]      ,[OP_ADDRESS3]      ,[ISSUER_CUSTOMERREFNO]      ,[ISSUER_NAME1]      ,[ISSUER_NAME2]      ,[ISSUER_NAME3]      ,[ISSUER_ADDRESS1]      ,[ISSUER_ADDRESS2]      ,[ISSUER_ADDRESS3]      ,[ISSUER_ACCOUNTNO]      ,[BENEFICIARY_NAME_FLAG]      ,[CP_NAME_FLAG]      ,[OP_NAME_FLAG]      ,[ISSUER_NAME_FLAG]      ,[TRANSACTOR_NAME_FLAG]      ,[SUSPICIOUS_ACTIVITY_CODE]      ,[CPCUSTTYPE]      ,[REGION]      ,[TXN_DATE_TIME]      ,a.[RUNID]   ,a.[RUNDATE],LAST_RENEWED_DATE,ACCOUNT_OPENED_dATE
+INTO AML_TEMP_TRANS 
+from ETL_AML_TRANSACTION a
+	left join aml_account b on a.AccountNumber = b.ACCOUNTNUMBER
+WHERE [TXNREFNO] = ''
 
 /*************/
 /*** DTDPM ***/
 /*************/
 
+
+INSERT INTO AML_TEMP_TRANS
 select 
 	 [TXNDATE]      ,[TXNREFNO]      ,'DTDPM' AS TXNTYPE      ,[TXNSUBTYPE]      ,[TXNMODE]      ,[TXNAMOUNT]      ,[INOUT]      ,a.[BRANCHCODE]      ,a.[CURRENCY]      ,[EXCHANGERATE]      ,[PURPOSE]      ,[CPNAME1]      ,a.[IMPORTED_DATE]      ,[CPNAME2]      ,[CPNAME3]      ,[CPINSTITUTION]      ,[CPINSTITUTIONCOUNTRY]      ,[CPADDRESS1]      ,[CPADDRESS2]      ,[CPADDRESS3]      ,[CORRESPONDENTBANK]      ,[CORRESBANKCOUNTRYCODE]      ,[CORRESBANKADDRESS1]      ,[CORRESBANKADDRESS2]      ,[CORRESBANKADDRESS3]      ,[INTERMEDIATORYINST]      ,[INTERMEDIATORYINSTCOUNTRY]      ,[INTERMEDIATORYINSTADDRESS1]      ,[INTERMEDIATORYINSTADDRESS2]      ,[INTERMEDIATORYINSTADDRESS3]      ,[PRODUCTTYPE]      ,[PRODUCTOWNERNAME1]      ,[PRODUCTOWNERNAME2]      ,[PRODUCTOWNERNAME3]      ,[PRODUCTOWNERADDRESS1]      ,[PRODUCTOWNERADDRESS2]      ,[PRODUCTOWNERADDRESS3]      ,[INCEPTIONDATE]      ,[MATUITYDATE]      ,[NARRATION]      ,[TXNNATURE]      ,[FUNDSSOURCE]      ,[FXAMOUNT]      ,[POSTINGGROUPID]      ,[POSTINGSEQNO]      ,a.[SOURCE]      ,[INPUTDATE]      ,[CERTIFIEDDOCUMENTS]      ,[REGULARDOCUMENTS]      ,[TXNFORBRANCH]      ,[BSRCODE]      ,[DEBIT_CREDIT]      ,[BENEFICIARYNAME1]      ,[BENEFICIARYNAME2]      ,[BENEFICIARYNAME3]      ,[BENEFICIARYADDRESS1]      ,[BENEFICIARYADDRESS2]      ,[BENEFICIARYADDRESS3]      ,a.[ACCOUNTID]      ,[REMARKS]      ,[OPBRANCHNAME]      ,[OPACCOUNTNO]      ,[DEALNO]      ,[SRCTXNTYPE]      ,[OTHERACCOUNT]      ,[BENEFICIARY_TINNO]      ,[BENEFICIARYCOUNTRY]      ,[REASONCODE]      ,a.[FIRST_IMPORTED_DATE]      ,[SRC_TXN_REFNO]      ,[cpaccountno]      ,a.[EXPORTED_DATE]      ,a.[ETL_FLAG]      ,[pop_benificiaryaddress]      ,[pop_benificiaryBOD]      ,[OTHERACCOUNTNO]      ,[SBCRefNoDetail]      ,[OTHERACCOUNTBRANCH]      ,[pop_benificiary]      ,[SBCREFNO]      ,[PO_GROUPID]      ,[SRC_TXNTYPE]      ,[customerno]      ,[CardNumber]      ,a.[AccountNumber]      ,[STOCKREFNO]      ,[AMOUNTOFCLAIM]      ,[NOOFSHARES]      ,[NETASSETVALUE]      ,[BENEFICIARY_CUSTOMERREFNO]      ,[BENEFICIARY_ACCOUNTNO]      ,[BENEFICIARY_DATEOFBIRTH]      ,[BENEFICIARY_PLACEOFBIRTH]      ,[BENEFICIARY_IDType]      ,[BENEFICIARY_IDNo]      ,[BENEFICIARY_TelNo]     ,[BENEFICIARY_NatureofBusiness]      ,[SUSPICION_CUSTOMERREFNO]      ,[SUSPICION_NAME1]      ,[SUSPICION_NAME2]      ,[SUSPICION_NAME3]      ,[SUSPICION_ADDRESS1]      ,[SUSPICION_ADDRESS2]      ,[SUSPICION_ADDRESS3]      ,[SUSPICION_ACCOUNTNO]      ,[SUSPICION_DATEOFBIRTH]      ,[SUSPICION_PLACEOFBIRTH]      ,[SUSPICION_NATIONALITY]      ,[SUSPICION_IDType]      ,[SUSPICION_IDNo]     ,[SUSPICION_TelNo]      ,[SUSPICION_NatureofBusiness]      ,[TRANSACTOR_CUSTOMERREFNO]      ,[TRANSACTOR_NAME1]      ,[TRANSACTOR_NAME2]      ,[TRANSACTOR_NAME3]      ,[TRANSACTOR_ADDRESS1]      ,[TRANSACTOR_ADDRESS2]      ,[TRANSACTOR_ADDRESS3]      ,[TRANSACTOR_ACCOUNTNO]      ,[CPCUSTOMERREFNO]      ,[OP_CUSTOMERREFNO]      ,[OP_NAME1]      ,[OP_NAME2]      ,[OP_NAME3]      ,[OP_ADDRESS1]      ,[OP_ADDRESS2]      ,[OP_ADDRESS3]      ,[ISSUER_CUSTOMERREFNO]      ,[ISSUER_NAME1]      ,[ISSUER_NAME2]      ,[ISSUER_NAME3]      ,[ISSUER_ADDRESS1]      ,[ISSUER_ADDRESS2]      ,[ISSUER_ADDRESS3]      ,[ISSUER_ACCOUNTNO]      ,[BENEFICIARY_NAME_FLAG]      ,[CP_NAME_FLAG]      ,[OP_NAME_FLAG]      ,[ISSUER_NAME_FLAG]      ,[TRANSACTOR_NAME_FLAG]      ,[SUSPICIOUS_ACTIVITY_CODE]      ,[CPCUSTTYPE]      ,[REGION]      ,[TXN_DATE_TIME]      ,a.[RUNID]   ,a.[RUNDATE],LAST_RENEWED_DATE,ACCOUNT_OPENED_dATE
 	from ETL_AML_TRANSACTION a
 	left join aml_account b on a.AccountNumber = b.ACCOUNTNUMBER 
-	where txntype = 'cpmd' and b.ACCOUNTTYPE in ('901','902','903','904','906','907','908','909','911','912','913','914')
+	where txntype = 'cpmd' and b.ACCOUNTTYPE in ('901','902','903','904','906','907','908','909','911','912','913','914');
 
 /*******************/
 /*** END - DTDPM ***/
 /*******************/
 
-UNION
 
 /*******************/
 /**** ROLLOVER *****/
 /*******************/
+
+INSERT INTO AML_TEMP_TRANS
 	SELECT * 
 	FROM ETL_AML_TRANSACTION 
 	WHERE TXNTYPE LIKE '%TD%' AND TXNAMOUNT > 500000 AND ACCOUNTNUMBER NOT IN
@@ -75,18 +67,15 @@ UNION
 		  ) A 
 		) A
 	  WHERE RN > 1
-	)
+	);
 
 /**********************/
 /*** END - ROLLOVER ***/
 /**********************/
 
-UNION
-
 /*************/
 /*** LCYs ****/
 /*************/
-
 
 
 /* ADDED: 11/06/2023 */
@@ -95,7 +84,7 @@ UNION
 
 
 
-
+INSERT INTO AML_TEMP_TRANS
 SELECT 
 b.TXNDATE ,b.TXNREFNO ,b.TXNTYPE ,b.TXNSUBTYPE ,b.TXNMODE ,b.TXNAMOUNT ,b.INOUT ,b.BRANCHCODE ,b.CURRENCY ,b.EXCHANGERATE
 ,b.PURPOSE ,b.CPNAME1 ,b.IMPORTED_DATE ,b.CPNAME2 ,b.CPNAME3 ,b.CPINSTITUTION ,b.CPINSTITUTIONCOUNTRY ,b.CPADDRESS1 ,b.CPADDRESS2 ,b.CPADDRESS3
@@ -153,29 +142,24 @@ FROM
 		) a 
 		where rntype = 2 and txntype = 'DTDYK'
 	) A 
-LEFT JOIN (SELECT * FROM ETL_AML_TRANSACTION WHERE TXNTYPE = 'DTDPD' ) B ON A.ACCOUNTNUMBER = B.ACCOUNTNUMBER
+LEFT JOIN (SELECT * FROM ETL_AML_TRANSACTION WHERE TXNTYPE = 'DTDPD' ) B ON A.ACCOUNTNUMBER = B.ACCOUNTNUMBER;
 
 /******************/
 /*** END - LCYs ***/
 /******************/
 
 
-UNION
-
-
 /*******************/
 /*** FTR - DPAs ****/
 /*******************/
 -- gets all DPA, not reportable DPA will be used for next transaction for last_renewed_date reference
-
-select * from ETL_AML_TRANSACTION where txntype = 'dtdpd' and TXNSUBTYPE = 'DPA' 
+INSERT INTO AML_TEMP_TRANS
+select * from ETL_AML_TRANSACTION where txntype = 'dtdpd' and TXNSUBTYPE = 'DPA' ;
 
 /******************/
 /*** END - DPAs ***/
 /******************/
 
-
-UNION
 
 
 /************************/
@@ -183,7 +167,7 @@ UNION
 /************************/
 -- REVISED INITIAL DEPOSIT "NEW"
 -- gets not reportable transaction will be used for next transaction for last_renewed_date reference
-
+INSERT INTO AML_TEMP_TRANS
 select 
 * from ETL_AML_TRANSACTION 
 where AccountNumber in (
@@ -196,14 +180,12 @@ where AccountNumber in (
 		having count(accountnumber) = 2 
 	) a
 ) 
-and TXNTYPE like '%td%' and TXNAMOUNT <= 500000 and TXNSUBTYPE = 'PMT' and TXNTYPE <> 'dtdpd'
+and TXNTYPE like '%td%' and TXNAMOUNT <= 500000 and TXNSUBTYPE = 'PMT' and TXNTYPE <> 'dtdpd';
 
 /******************************/
 /*** END - INITIAL DEPOSIT ****/
 /******************************/
 
-
-UNION
 
 
 /***************************************************/
@@ -211,6 +193,7 @@ UNION
 /***************************************************/
 --GETS ONLY THE DTDYK FOR LAST_RENEWED_DATE REFERENCE
 
+INSERT INTO AML_TEMP_TRANS
 select
 a.*
 --a.AccountNumber, 
@@ -237,14 +220,11 @@ from
 ) a
 inner join ETL_AML_TRANSACTION b on b.AccountNumber = a.AccountNumber  and b.TXNAMOUNT = a.TXNAMOUNT and b.TXNTYPE <> a.TXNTYPE
 inner join ETL_AML_TRANSACTION c on c.AccountNumber = a.AccountNumber and c.TXNAMOUNT <> a.TXNAMOUNT 
-where b.TXNAMOUNT <= 500000 and c.TXNAMOUNT+b.TXNAMOUNT <= 500000 
+where b.TXNAMOUNT <= 500000 and c.TXNAMOUNT+b.TXNAMOUNT <= 500000;
 
 /*********************************************************/
 /*** END - INITIAL DEPOSIT (FTR-ADDITIONAL PLACEMENT) ****/
 /*********************************************************/
-
-
-UNION
 
 
 /*******************************/
@@ -253,7 +233,7 @@ UNION
 
 -- NEW FTR - INITIAL REPORTING - 04262023
 -- REVISED @ 10-20-2023
-
+INSERT INTO AML_TEMP_TRANS
 select * from ETL_AML_TRANSACTION 
 where AccountNumber in 
 (
@@ -287,20 +267,18 @@ where AccountNumber in
 		having count(accountnumber) = 2
 	) a
 ) 
-and TXNSUBTYPE = 'PMT' and TXNMODE = 'CR' and TXNAMOUNT > 500000 
+and TXNSUBTYPE = 'PMT' and TXNMODE = 'CR' and TXNAMOUNT > 500000;
 
 /*************************************/
 /*** END - FTR - INITIAL REPORTING ***/
 /*************************************/
 
 
-UNION
-
 
 /************************************************/
 /*** FTR - ADDITONAL PLACEMENT (SAME AMOUNTS) ***/
 /************************************************/
-
+INSERT INTO AML_TEMP_TRANS
 select
 --'FTR-AP BAL+AP > 500K (SAME AMOUNTS)' as TD_SCENARIO,
 TXNDATE ,TXNREFNO ,TXNTYPE ,TXNSUBTYPE ,TXNMODE ,TXNAMOUNT, INOUT ,BRANCHCODE ,CURRENCY ,EXCHANGERATE
@@ -379,14 +357,12 @@ and AccountNumber not in  --NEWLY ADDED PARAMETER
 			GROUP BY AccountNumber, TXNAMOUNT
 			HAVING TXNAMOUNT > 500000
 		) x  --where AccountNumber = '052120000790'
-	)
+	);
 
 /******************************************************/
 /*** END - FTR - ADDITONAL PLACEMENT (SAME AMOUNTS) ***/
 /******************************************************/
 
-
-UNION
 
 
 /*******************************************************/
@@ -395,7 +371,7 @@ UNION
 
 
 -- w/o FTRQ
-
+INSERT INTO AML_TEMP_TRANS
 select
 --a.AccountNumber,
 --a.TXNREFNO as A_TXNREFNO, a.TXNTYPE as A_TXNTYPE, a.txnsubtype as A_TXNSUBTYPE, a.TXNAMOUNT as A_TXNAMOUNT, a.INOUT as A_INOUT, a.last_renewed_date as LRD,
@@ -452,19 +428,19 @@ from
 ) a
 inner join ETL_AML_TRANSACTION b on b.AccountNumber = a.AccountNumber  and b.TXNAMOUNT = a.TXNAMOUNT and b.TXNTYPE <> a.TXNTYPE
 inner join ETL_AML_TRANSACTION c on c.AccountNumber = a.AccountNumber and c.TXNAMOUNT <> a.TXNAMOUNT 
-where c.TXNAMOUNT > 500000 or (b.TXNAMOUNT <= 500000 and c.TXNAMOUNT+b.TXNAMOUNT > 500000)
+where c.TXNAMOUNT > 500000 or (b.TXNAMOUNT <= 500000 and c.TXNAMOUNT+b.TXNAMOUNT > 500000);
 
 /*************************************************************/
 /*** END - ADDITIONAL PLACEMENT FILTERING PROCESS WITH FTR ***/
 /*************************************************************/
 
 
-UNION
-
 
 /******************************************/
 /*** ADDITIONAL PLACEMENT (SAME AMOUNT) ***/
 /******************************************/
+
+INSERT INTO AML_TEMP_TRANS
 select 
 TXNDATE ,TXNREFNO ,TXNTYPE ,TXNSUBTYPE ,TXNMODE ,TXNAMOUNT, INOUT ,BRANCHCODE ,CURRENCY ,EXCHANGERATE
 ,PURPOSE ,CPNAME1 ,IMPORTED_DATE ,CPNAME2 ,CPNAME3 ,CPINSTITUTION ,CPINSTITUTIONCOUNTRY ,CPADDRESS1 ,CPADDRESS2 ,CPADDRESS3
@@ -528,14 +504,11 @@ from
 ) a
 inner join ETL_AML_TRANSACTION b on b.AccountNumber = a.AccountNumber  and b.TXNAMOUNT = a.TXNAMOUNT and b.TXNTYPE <> a.TXNTYPE
 inner join ETL_AML_TRANSACTION c on c.AccountNumber = a.AccountNumber and c.TXNAMOUNT = b.TXNAMOUNT and b.TXNTYPE = c.TXNTYPE and c.TXNREFNO <> b.TXNREFNO
-where c.TXNAMOUNT > 500000 ) a where rn = 1
+where c.TXNAMOUNT > 500000 ) a where rn = 1;
 
 /************************************************/
 /*** END - ADDITIONAL PLACEMENT (SAME AMOUNT) ***/
 /************************************************/
-
-
-UNION
 
 
 /*********************************************/
@@ -543,7 +516,7 @@ UNION
 /*********************************************/
 
 -- REVISED @ 10-20-2023
-
+INSERT INTO AML_TEMP_TRANS
 select 
 a.*
 --a.TXNDATE,a.TXNREFNO, a.TXNTYPE, a.TXNAMOUNT,a.last_renewed_date, b.txndate as AMLTXN_TXNDATE, b.TXNAMOUNT as AMLTXN_TXNAMOUNT
@@ -613,21 +586,18 @@ left join
 	) a
 	where rn = 1 and TXNTYPE like '%td%'
 )b on b.AccountNumber = a.AccountNumber
-where b.TXNAMOUNT <= 500000 and b.TXNTYPE like '%td%' 
+where b.TXNAMOUNT <= 500000 and b.TXNTYPE like '%td%';
 
 /***************************************************/
 /*** END - FTR - ADDITIONAL PLACEMENT (ROLLOVER) ***/
 /***************************************************/
 
 
-UNION
-
-
 /***************************************/
 /*** WITHDRAWAL FILTERING PROCESS (A)***/
 /***************************************/
 -- FOR WITHDRAW ABOVE 500K 
-
+INSERT INTO AML_TEMP_TRANS
 select  
 --a.AccountNumber, 
 --a.TXNREFNO as A_TXNREFNO, a.TXNTYPE as A_TXNTYPE, a.TXNAMOUNT as A_TXNAMOUNT, a.INOUT as A_INOUT,
@@ -652,7 +622,7 @@ from
 ) a
 inner join ETL_AML_TRANSACTION b on b.AccountNumber = a.AccountNumber and b.TXNAMOUNT = a.TXNAMOUNT and b.TXNTYPE <> a.TXNTYPE
 inner join ETL_AML_TRANSACTION c on c.AccountNumber = a.AccountNumber and c.TXNAMOUNT <> a.TXNAMOUNT 
-where c.TXNAMOUNT > 500000
+where c.TXNAMOUNT > 500000;
 
 
 -- a. b. is the balance
@@ -662,9 +632,6 @@ where c.TXNAMOUNT > 500000
 /*********************************************/
 /*** END - WITHDRAWAL FILTERING PROCESS (A)***/
 /*********************************************/
- 
-
- UNION
 
 
 /***************************************/
@@ -672,6 +639,7 @@ where c.TXNAMOUNT > 500000
 /***************************************/
 -- BALANCE >500k
 
+INSERT INTO AML_TEMP_TRANS
 select 
 --a.AccountNumber, 
 --a.TXNREFNO as A_TXNREFNO, a.TXNTYPE as A_TXNTYPE, a.TXNAMOUNT as A_TXNAMOUNT, a.INOUT as A_INOUT,
@@ -698,7 +666,7 @@ from
 ) a
 inner join ETL_AML_TRANSACTION b on b.AccountNumber = a.AccountNumber and b.TXNAMOUNT = a.TXNAMOUNT and b.TXNTYPE <> a.TXNTYPE
 inner join ETL_AML_TRANSACTION c on c.AccountNumber = a.AccountNumber and c.TXNAMOUNT <> a.TXNAMOUNT 
-where c.TXNAMOUNT > 500000 and a.TXNAMOUNT > 500000
+where c.TXNAMOUNT > 500000 and a.TXNAMOUNT > 500000;
 
 
 
@@ -711,15 +679,11 @@ where c.TXNAMOUNT > 500000 and a.TXNAMOUNT > 500000
 
 
 
-UNION
-
-
-
 /*******************************/
 /*** WITHDRAWAL SAME AMOUNTS ***/
 /*******************************/
 
-
+INSERT INTO AML_TEMP_TRANS
 select
  TXNDATE , TXNREFNO , TXNTYPE , TXNSUBTYPE , TXNMODE , TXNAMOUNT, INOUT , BRANCHCODE , CURRENCY , EXCHANGERATE
 , PURPOSE , CPNAME1 , IMPORTED_DATE , CPNAME2 , CPNAME3 , CPINSTITUTION , CPINSTITUTIONCOUNTRY , CPADDRESS1 , CPADDRESS2 , CPADDRESS3
@@ -768,64 +732,72 @@ inner join ETL_AML_TRANSACTION b on b.AccountNumber = a.AccountNumber and b.TXNA
 inner join ETL_AML_TRANSACTION c on  c.AccountNumber = b.AccountNumber and  c.TXNAMOUNT = b.TXNAMOUNT and  c.TXNTYPE = b.TXNTYPE and  c.TXNREFNO <> b.TXNREFNO
 where  c.TXNAMOUNT > 500000
 ) a
-where rn = 1
+where rn = 1;
 
 /*************************************/
 /*** END - WITHDRAWAL SAME AMOUNTS ***/
 /*************************************/
 
-UNION
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------- NON TD TRANSACTIONS -------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
+INSERT INTO AML_TEMP_TRANS
 	select 
 	 a.*
 	from ETL_AML_TRANSACTION a
 	left join aml_account b on a.AccountNumber = b.ACCOUNTNUMBER 
-	where txntype = 'cpmd' and b.ACCOUNTTYPE not in ('901','902','903','904','906','907','908','909','911','912','913','914')
-
-UNION
+	where txntype = 'cpmd' and b.ACCOUNTTYPE not in ('901','902','903','904','906','907','908','909','911','912','913','914');
 
 
 ----------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------
 
-SELECT * FROM ETL_AML_TRANSACTION WHERE TXNSUBTYPE = 'FTC'
+INSERT INTO AML_TEMP_TRANS
+SELECT * FROM ETL_AML_TRANSACTION WHERE TXNSUBTYPE = 'FTC';
 
-UNION
+INSERT INTO AML_TEMP_TRANS
+SELECT * FROM ETL_AML_TRANSACTION WHERE PRODUCTTYPE = 'FTRQ' --transformed from other SP when already in AML_TRANSACTION;
 
-SELECT * FROM ETL_AML_TRANSACTION WHERE PRODUCTTYPE = 'FTRQ' --transformed from other SP when already in AML_TRANSACTION
+INSERT INTO AML_TEMP_TRANS
+select * from ETL_AML_TRANSACTION where txntype not like '%td%'and txntype not like '%cpmd%' and txntype not like '%LLPRD%';
 
-UNION 
-
-select * from ETL_AML_TRANSACTION where txntype not like '%td%'and txntype not like '%cpmd%' and txntype not like '%LLPRD%'
-
-UNION
-
-select * from ETL_AML_TRANSACTION where source like '%ropa%'
+INSERT INTO AML_TEMP_TRANS
+select * from ETL_AML_TRANSACTION where source like '%ropa%';
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
 
-
-
-
-UNION
-
+INSERT INTO AML_TEMP_TRANS
 select 
  [TXNDATE]      ,[TXNREFNO]      ,'CCOL' AS TXNTYPE      ,[TXNSUBTYPE]      ,[TXNMODE]      ,[TXNAMOUNT]      ,[INOUT]      ,a.[BRANCHCODE]      ,a.[CURRENCY]      ,[EXCHANGERATE]      ,[PURPOSE]      ,[CPNAME1]      ,a.[IMPORTED_DATE]      ,[CPNAME2]      ,[CPNAME3]      ,[CPINSTITUTION]      ,[CPINSTITUTIONCOUNTRY]      ,[CPADDRESS1]      ,[CPADDRESS2]      ,[CPADDRESS3]      ,[CORRESPONDENTBANK]      ,[CORRESBANKCOUNTRYCODE]      ,[CORRESBANKADDRESS1]      ,[CORRESBANKADDRESS2]      ,[CORRESBANKADDRESS3]      ,[INTERMEDIATORYINST]      ,[INTERMEDIATORYINSTCOUNTRY]      ,[INTERMEDIATORYINSTADDRESS1]      ,[INTERMEDIATORYINSTADDRESS2]      ,[INTERMEDIATORYINSTADDRESS3]      ,[PRODUCTTYPE]      ,[PRODUCTOWNERNAME1]      ,[PRODUCTOWNERNAME2]      ,[PRODUCTOWNERNAME3]      ,[PRODUCTOWNERADDRESS1]      ,[PRODUCTOWNERADDRESS2]      ,[PRODUCTOWNERADDRESS3]      ,[INCEPTIONDATE]      ,[MATUITYDATE]      ,[NARRATION]      ,[TXNNATURE]      ,[FUNDSSOURCE]      ,[FXAMOUNT]      ,[POSTINGGROUPID]      ,[POSTINGSEQNO]      ,a.[SOURCE]      ,[INPUTDATE]      ,[CERTIFIEDDOCUMENTS]      ,[REGULARDOCUMENTS]      ,[TXNFORBRANCH]      ,[BSRCODE]      ,[DEBIT_CREDIT]      ,[BENEFICIARYNAME1]      ,[BENEFICIARYNAME2]      ,[BENEFICIARYNAME3]      ,[BENEFICIARYADDRESS1]      ,[BENEFICIARYADDRESS2]      ,[BENEFICIARYADDRESS3]      ,a.[ACCOUNTID]      ,[REMARKS]      ,[OPBRANCHNAME]      ,[OPACCOUNTNO]      ,[DEALNO]      ,[SRCTXNTYPE]      ,[OTHERACCOUNT]      ,[BENEFICIARY_TINNO]      ,[BENEFICIARYCOUNTRY]      ,[REASONCODE]      ,a.[FIRST_IMPORTED_DATE]      ,[SRC_TXN_REFNO]      ,[cpaccountno]      ,a.[EXPORTED_DATE]      ,a.[ETL_FLAG]      ,[pop_benificiaryaddress]      ,[pop_benificiaryBOD]      ,[OTHERACCOUNTNO]      ,[SBCRefNoDetail]      ,[OTHERACCOUNTBRANCH]      ,[pop_benificiary]      ,[SBCREFNO]      ,[PO_GROUPID]      ,[SRC_TXNTYPE]      ,[customerno]      ,[CardNumber]      ,a.[AccountNumber]      ,[STOCKREFNO]      ,[AMOUNTOFCLAIM]      ,[NOOFSHARES]      ,[NETASSETVALUE]      ,[BENEFICIARY_CUSTOMERREFNO]      ,[BENEFICIARY_ACCOUNTNO]      ,[BENEFICIARY_DATEOFBIRTH]      ,[BENEFICIARY_PLACEOFBIRTH]      ,[BENEFICIARY_IDType]      ,[BENEFICIARY_IDNo]      ,[BENEFICIARY_TelNo]     ,[BENEFICIARY_NatureofBusiness]      ,[SUSPICION_CUSTOMERREFNO]      ,[SUSPICION_NAME1]      ,[SUSPICION_NAME2]      ,[SUSPICION_NAME3]      ,[SUSPICION_ADDRESS1]      ,[SUSPICION_ADDRESS2]      ,[SUSPICION_ADDRESS3]      ,[SUSPICION_ACCOUNTNO]      ,[SUSPICION_DATEOFBIRTH]      ,[SUSPICION_PLACEOFBIRTH]      ,[SUSPICION_NATIONALITY]      ,[SUSPICION_IDType]      ,[SUSPICION_IDNo]     ,[SUSPICION_TelNo]      ,[SUSPICION_NatureofBusiness]      ,[TRANSACTOR_CUSTOMERREFNO]      ,[TRANSACTOR_NAME1]      ,[TRANSACTOR_NAME2]      ,[TRANSACTOR_NAME3]      ,[TRANSACTOR_ADDRESS1]      ,[TRANSACTOR_ADDRESS2]      ,[TRANSACTOR_ADDRESS3]      ,[TRANSACTOR_ACCOUNTNO]      ,[CPCUSTOMERREFNO]      ,[OP_CUSTOMERREFNO]      ,[OP_NAME1]      ,[OP_NAME2]      ,[OP_NAME3]      ,[OP_ADDRESS1]      ,[OP_ADDRESS2]      ,[OP_ADDRESS3]      ,[ISSUER_CUSTOMERREFNO]      ,[ISSUER_NAME1]      ,[ISSUER_NAME2]      ,[ISSUER_NAME3]      ,[ISSUER_ADDRESS1]      ,[ISSUER_ADDRESS2]      ,[ISSUER_ADDRESS3]      ,[ISSUER_ACCOUNTNO]      ,[BENEFICIARY_NAME_FLAG]      ,[CP_NAME_FLAG]      ,[OP_NAME_FLAG]      ,[ISSUER_NAME_FLAG]      ,[TRANSACTOR_NAME_FLAG]      ,[SUSPICIOUS_ACTIVITY_CODE]      ,[CPCUSTTYPE]      ,[REGION]      ,[TXN_DATE_TIME]      ,a.[RUNID]   ,a.[RUNDATE],LAST_RENEWED_DATE,ACCOUNT_OPENED_dATE
 from ETL_AML_TRANSACTION a
 left join aml_account b on a.AccountNumber = b.ACCOUNTNUMBER 
-where txntype in ('BPCHC') AND TXNSUBTYPE in ('CHD') AND CONVERT(FLOAT,TXNAMOUNT) > 500000
-
- 
+where txntype in ('BPCHC') AND TXNSUBTYPE in ('CHD') AND CONVERT(FLOAT,TXNAMOUNT) > 500000;
 
 
-) A
+
+
+INSERT INTO AML_TRANSACTION (TXNID, TXNDATE, TXNREFNO, TXNTYPE, TXNSUBTYPE, TXNMODE, TXNAMOUNT, INOUT, BRANCHCODE, CURRENCY, EXCHANGERATE,REMARKS,
+		PURPOSE, CPNAME1, IMPORTED_DATE, CPNAME2, CPNAME3, CPADDRESS1, CPADDRESS2, CPADDRESS3, CORRESPONDENTBANK, CORRESBANKCOUNTRYCODE,
+		CORRESBANKADDRESS1, CORRESBANKADDRESS2, CORRESBANKADDRESS3, PRODUCTTYPE, INCEPTIONDATE, MATUITYDATE, TXNNATURE, FUNDSSOURCE, FXAMOUNT,
+		SOURCE, INPUTDATE, DEBIT_CREDIT, BENEFICIARYNAME1, BENEFICIARYNAME2, BENEFICIARYNAME3, BENEFICIARY_ACCOUNTNO, BENEFICIARY_NAME_FLAG, 
+		BENEFICIARYADDRESS1, BENEFICIARYADDRESS2, BENEFICIARYADDRESS3, ACCOUNTID, OPACCOUNTNO, SRCTXNTYPE, SRC_TXN_REFNO, cpaccountno, AccountNumber,
+		STOCKREFNO, NOOFSHARES, NETASSETVALUE, REGION, TXN_DATE_TIME, RUNID, RUNDATE)
+
+
+
+select 
+(SELECT max(txnid) from AML_TRANSACTION) + ROW_NUMBER() OVER (ORDER BY A.TXNREFNO) AS TXNID,
+CASE WHEN a.SOURCE = 'REM-DEPO' THEN a.TXNDATE ELSE TXN_DATE_TIME END as TXNDATE, a.txnrefno, TXNTYPE, TXNSUBTYPE, TXNMODE, TXNAMOUNT, INOUT, BRANCHCODE, CURRENCY, EXCHANGERATE,REMARKS,
+		PURPOSE, CPNAME1, IMPORTED_DATE, CPNAME2, CPNAME3, CPADDRESS1, CPADDRESS2, CPADDRESS3, CORRESPONDENTBANK, CORRESBANKCOUNTRYCODE,
+		CORRESBANKADDRESS1, CORRESBANKADDRESS2, CORRESBANKADDRESS3, PRODUCTTYPE, INCEPTIONDATE, MATUITYDATE, TXNNATURE, FUNDSSOURCE, FXAMOUNT,
+		A.SOURCE, INPUTDATE, DEBIT_CREDIT, BENEFICIARYNAME1, BENEFICIARYNAME2, BENEFICIARYNAME3, BENEFICIARY_ACCOUNTNO, BENEFICIARY_NAME_FLAG, 
+		BENEFICIARYADDRESS1, BENEFICIARYADDRESS2, BENEFICIARYADDRESS3, b.accountid,OPACCOUNTNO, SRCTXNTYPE, SRC_TXN_REFNO, cpaccountno, A.AccountNumber,
+			STOCKREFNO, NOOFSHARES, NETASSETVALUE, REGION, convert(date, TXN_DATE_TIME ) txn_date_time, RUNID, RUNDATE
+from AML_TEMP_TRANS A
 INNER JOIN (select accountid, accountnumber, source, ACCOUNTTYPE,Row_Number() over (partition by accountnumber, source order by accountid DESC) RID from aml_account) B
 	    on A.ACCOUNTNUMBER = B.ACCOUNTNUMBER and B.RID = 1	
 	AND CASE WHEN A.SOURCE IN ('TRUST-UITF-UIN', 'TRUST-UITF-URE') THEN 'TRUST-UITF' 
@@ -834,9 +806,6 @@ INNER JOIN (select accountid, accountnumber, source, ACCOUNTTYPE,Row_Number() ov
 			 ELSE A.SOURCE END = B.SOURCE
 LEFT JOIN (SELECT TXNID, TXNREFNO, TXNDATE FROM AML_TRANSACTION) C ON A.TXNREFNO = C.TXNREFNO AND CONVERT(DATE, A.TXNDATE) = CONVERT(DATE, C.TXNDATE)
 WHERE C.TXNID IS NULL AND A.TXNTYPE IN (SELECT TRAN_CODE FROM AML_TRANSACTION_TYPE)
-
-
-
 
 end
 
