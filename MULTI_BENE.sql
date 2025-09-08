@@ -31,25 +31,32 @@ BEGIN
         BENEFICIARYNAME1 = CUST.FIRSTNAME,
         BENEFICIARYNAME2 = CUST.MIDDLENAME,
         BENEFICIARYNAME3 = CUST.LASTNAME,
-        BENEFICIARY_NAME_FLAG = CASE WHEN CUST.INDIVIDUAL_CORPORATE = 1  THEN 'N' WHEN CUST.INDIVIDUAL_CORPORATE = 2 THEN 'Y' END
+        BENEFICIARY_NAME_FLAG = ( CASE WHEN CUST.INDIVIDUAL_CORPORATE = 1  THEN 'N' WHEN CUST.INDIVIDUAL_CORPORATE = 2 THEN 'Y' END )
 
     FROM AML_TRANSACTION ATM
         JOIN (
             SELECT * 
             FROM (
-                SELECT A.ACCOUNTID,B.TXNID,C.CUSTOMERID,ROW_NUMBER() OVER(PARTITION BY A.ACCOUNTID,B.TXNID ORDER BY A.ACCOUNTID) COUNTS 
+                SELECT 
+                    A.ACCOUNTID,
+                    B.TXNID,
+                    C.CUSTOMERID,
+                    ROW_NUMBER() OVER(PARTITION BY A.ACCOUNTID,B.TXNID ORDER BY A.ACCOUNTID) COUNTS 
                 FROM AML_ACCOUNT A
                     JOIN (
-                        select BENEFICIARY_ACCOUNTNO,TXNID 
-                        from AML_TRANSACTION 
-                        WHERE TRIM(BENEFICIARY_ACCOUNTNO) IN 
-                            (
-                                SELECT ACCOUNTNUMBER 
-                                FROM AML_ACCOUNT
-                            ) 
+                        SELECT 
+                            BENEFICIARY_ACCOUNTNO,
+                            TXNID 
+                        FROM AML_TRANSACTION 
+                        WHERE CONVERT(DATE,IMPORTED_DATE) = CONVERT(DATE,GETDATE())
+                            AND TRIM(BENEFICIARY_ACCOUNTNO) IN 
+                                (
+                                    SELECT ACCOUNTNUMBER 
+                                    FROM AML_ACCOUNT
+                                ) 
                             AND SOURCE = 'CASA' 
                             AND TXNTYPE <> 'COCKD'
-                            AND CONVERT(DATE,IMPORTED_DATE) = CONVERT(DATE,GETDATE())
+                            
 
                     ) B ON A.ACCOUNTNUMBER = TRIM(B.BENEFICIARY_ACCOUNTNO)
                     JOIN AML_CUSTOMER_ACCOUNT C ON A.ACCOUNTID = C.ACCOUNTID
@@ -67,8 +74,8 @@ BEGIN
     SET CPNAME1 = BENEFICIARYNAME1,
         CPNAME2 = BENEFICIARYNAME2,
         CPNAME3 = BENEFICIARYNAME3
-    WHERE TXNTYPE = 'COCKD' 
-        AND CONVERT(DATE,IMPORTED_DATE) = CONVERT(DATE,GETDATE()) 
+    WHERE CONVERT(DATE,IMPORTED_DATE) = CONVERT(DATE,GETDATE()) 
+        AND TXNTYPE = 'COCKD'
         AND SOURCE = 'CASA'
         AND ((LEN(BENEFICIARYNAME1) = 12 and isnumeric(BENEFICIARYNAME1) = 0) or LEN(BENEFICIARYNAME1) <> 12)
 END
@@ -160,6 +167,8 @@ BEGIN
         )
         and (BENEFICIARYNAME1 is not null or BENEFICIARYNAME3 is not null or BENEFICIARY_ACCOUNTNO is not null)
         AND CONVERT(DATE,IMPORTED_DATE) = CONVERT(DATE,GETDATE())  AND SOURCE = 'CASA'
+
+
 END
 
 
